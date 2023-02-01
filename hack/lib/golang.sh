@@ -449,7 +449,7 @@ kube::golang::set_platform_envs() {
 
   # if CC is defined for platform then always enable it
   ccenv=$(echo "$platform" | awk -F/ '{print "KUBE_" toupper($1) "_" toupper($2) "_CC"}')
-  if [ -n "${!ccenv-}" ]; then 
+  if [ -n "${!ccenv-}" ]; then
     export CGO_ENABLED=1
     export CC="${!ccenv}"
   fi
@@ -838,17 +838,19 @@ kube::golang::build_binaries() {
     goasmflags="all=-trimpath=${trimroot}"
 
     gogcflags="all=-trimpath=${trimroot} ${GOGCFLAGS:-}"
-    if [[ "${DBG:-}" == 1 ]]; then
-        # Debugging - disable optimizations and inlining and trimPath
-        gogcflags="${GOGCFLAGS:-} all=-N -l"
-        goasmflags=""
-    fi
+    # if [[ "${DBG:-}" == 1 ]]; then
+    #     # Debugging - disable optimizations and inlining and trimPath
+    #     gogcflags="${GOGCFLAGS:-} all=-N -l"
+    #     goasmflags=""
+    # fi
 
+    gogcflags="${GOGCFLAGS:-} all=-N -l"
+    goasmflags=""
     goldflags="all=$(kube::version::ldflags) ${GOLDFLAGS:-}"
-    if [[ "${DBG:-}" != 1 ]]; then
-        # Not debugging - disable symbols and DWARF.
-        goldflags="${goldflags} -s -w"
-    fi
+    # if [[ "${DBG:-}" != 1 ]]; then
+    #     # Not debugging - disable symbols and DWARF.
+    #     goldflags="${goldflags} -s -w"
+    # fi
 
     # Extract tags if any specified in GOFLAGS
     gotags="selinux,notest,$(echo "${GOFLAGS:-}" | sed -ne 's|.*-tags=\([^-]*\).*|\1|p')"
