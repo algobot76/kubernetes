@@ -195,6 +195,8 @@ func (dc *DeploymentController) updateDeployment(logger klog.Logger, old, cur in
 func (dc *DeploymentController) deleteDeployment(logger klog.Logger, obj interface{}) {
 	d, ok := obj.(*apps.Deployment)
 	if !ok {
+		// (ab76) A tomestone is a wrapper around the original object when it is deleted. It is used to store the last
+		// known state of the object before it was deleted.
 		tombstone, ok := obj.(cache.DeletedFinalStateUnknown)
 		if !ok {
 			utilruntime.HandleError(fmt.Errorf("couldn't get object from tombstone %#v", obj))
