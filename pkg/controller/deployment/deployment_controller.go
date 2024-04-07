@@ -393,12 +393,15 @@ func (dc *DeploymentController) deletePod(logger klog.Logger, obj interface{}) {
 }
 
 func (dc *DeploymentController) enqueue(deployment *apps.Deployment) {
+	// (ab76) KeyFunc is used to generate a unique key for the deployment.
 	key, err := controller.KeyFunc(deployment)
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("couldn't get key for object %#v: %v", deployment, err))
 		return
 	}
 
+	// (ab76) Add the key to the queue. Later when the deployment is dequeued for processing, the same key can be used
+	// to fetch the deployment from the informer cache.
 	dc.queue.Add(key)
 }
 
